@@ -36,8 +36,9 @@ class AsteriskTCPServer:
         try:
             packet_count = 0
             while True:
-                # Receive 10ms SLIN (320 bytes) - mixed-mono with both parties
-                data = await reader.read(320)
+                # Receive variable-sized audio chunks due to TCP fragmentation  
+                # Common patterns: 88, 176, 208, 264, 320 bytes, etc.
+                data = await reader.read(4096)  # Read up to 4KB, handle variable sizes
                 packet_count += 1
                 
                 if not data:
@@ -96,9 +97,13 @@ class AsteriskTCPServer:
                 if call_id and audio_buffer:
                     audio_array = audio_buffer.add_chunk(data)
                     
+                    # DEMO MODE: Skip real-time processing, only monitor call audio
                     if audio_array is not None:
-                        # Submit to Celery for transcription with call session tracking
-                        await self._submit_transcription(audio_array, call_id)
+                        # Just log that we received audio chunk (for monitoring purposes)
+                        logger.debug(f"📊 [demo] Received {len(data)} bytes for call {call_id} (not processing in real-time)")
+                        
+                        # Real-time transcription disabled for demo
+                        # await self._submit_transcription(audio_array, call_id)
                     
         except Exception as e:
             logger.error(f"❌ [client] Error handling connection {temp_connection_id}: {e}")

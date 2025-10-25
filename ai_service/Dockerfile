@@ -14,6 +14,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libsndfile1 \
     libsox-fmt-all \
     sox \
+    sshpass \
+    openssh-client \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cache
 
@@ -43,7 +45,7 @@ COPY app/ /app/app/
 RUN touch /app/app/__init__.py \
     && touch /app/app/core/__init__.py \
     && touch /app/app/api/__init__.py \
-    && touch /app/app/models/__init__.py \
+    && touch /app/app/model_scripts/__init__.py \
     && touch /app/app/config/__init__.py \
     && touch /app/app/tasks/__init__.py
 
